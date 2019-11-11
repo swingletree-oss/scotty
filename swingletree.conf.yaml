@@ -1,0 +1,26 @@
+scotty:
+  port: 3010
+
+  # storage configuration
+  storage:
+    host: localhost # database host
+    password: # database password
+
+  elastic:
+    enabled: false
+    node: http://localhost:9200
+    auth: # elastic nodejs auth object
+      username:
+      password:
+      apiKey:
+    index: swingletree
+
+  # GitHub specific configuration
+  github:
+    app:
+      id: # The AppId of your GitHub app instance (not installation!)
+      page: # the GitHub App public page. Will be referenced in the Swingletree landing page.
+      keyfile: gh-app.pem # the key file of your GitHub App (you retrieve this from the App settings page)
+    base: https://api.github.com # Github Api base url
+    secret: # this is the webhook secret. You should set it.
+    debug: false # runs octokit in debug mode. Use this only for debug, since this can reveal secret tokens in the logs!

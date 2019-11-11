@@ -1,0 +1,12 @@
+scotty:
+  github:
+    app:
+      id: 101
+      page: "publicPage"
+      keyfile: "test/app-key.test"
+    base: "http://localhost:10101"
+    secret: "do not tell"
+    debug: false
+  storage:
+    host: "http://localhost"
+    password: "somepassword"
