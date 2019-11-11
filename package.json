@@ -39,6 +39,7 @@
     "request": "^2.88.0"
   },
   "devDependencies": {
+    "@semantic-release/exec": "^3.3.8",
     "@types/body-parser": "^1.17.1",
     "@types/chai": "^4.2.4",
     "@types/chai-things": "0.0.33",
