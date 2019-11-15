@@ -34,6 +34,7 @@ class RedisClientFactory {
     const client = new RedisClient({
       host: this.database,
       password: (this.password) ? this.password : undefined,
+      enable_offline_queue: false,
       retry_strategy: (options) => {
         return 5000;
       }
