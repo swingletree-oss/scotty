@@ -3,6 +3,7 @@ import { Request, Response, Router } from "express";
 import { inject, injectable } from "inversify";
 import GithubCommitStatusSender from "../github/commit-status-sender";
 import { HistoryService } from "../elastic/persister";
+import { BadRequestError } from "@swingletree-oss/harness/dist/comms";
 
 @injectable()
 export class ReportWebservice {
@@ -29,6 +30,14 @@ export class ReportWebservice {
     log.debug("processing report");
     const message: Comms.Message.BasicMessage<Harness.AnalysisReport> = req.body;
     const report: Harness.AnalysisReport = message.data;
+
+    if (!message.data.source) {
+      res.status(422).send(
+        (new Comms.Message.ErrorMessage())
+          .add(new BadRequestError("missing source information in report"))
+      );
+      return;
+    }
 
     try {
       this.historyService.store(report);
