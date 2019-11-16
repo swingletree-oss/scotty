@@ -25,6 +25,8 @@ class RedisClientFactory {
     this.database = configService.get(ScottyConfig.Storage.DATABASE);
     this.password = configService.get(ScottyConfig.Storage.PASSWORD);
 
+    log.debug("redis client connects to %s", this.database);
+
     if (!this.password) {
       log.warn("Redis client is configured to use no authentication. Please consider securing the database.");
     }
@@ -34,6 +36,7 @@ class RedisClientFactory {
     const client = new RedisClient({
       host: this.database,
       password: (this.password) ? this.password : undefined,
+      db: databaseIndex,
       enable_offline_queue: false,
       retry_strategy: (options) => {
         return 5000;
@@ -52,8 +55,6 @@ class RedisClientFactory {
       log.debug("Redis client for database index %i is connected and ready.", databaseIndex);
       this.eventBus.emit(new DatabaseReconnectEvent(databaseIndex));
     });
-
-    client.select(databaseIndex);
 
     this.registeredClients.push(client);
 
