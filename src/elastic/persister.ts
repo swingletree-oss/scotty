@@ -25,17 +25,21 @@ export class ElasticHistoryService implements HistoryService {
     this.index = configService.get(ScottyConfig.Elastic.INDEX);
   }
 
-  public store(report: Harness.AnalysisReport) {
-    log.info("creating history entry (%s) %s", report.sender, report.source.toRefString());
+  public async store(report: Harness.AnalysisReport) {
+    log.info("creating history entry for %s %s", report.sender, report.uuid);
 
     if (!report.timestamp) {
       report.timestamp = new Date();
     }
 
-    this.client.index({
-      index: this.index,
-      body: report
-    });
+    try {
+      await this.client.index({
+        index: this.index,
+        body: report
+      });
+    } catch (err) {
+      log.warn("could not persist entry for %s %s. caused by %s", report.sender, report.uuid, err);
+    }
   }
 }
 
