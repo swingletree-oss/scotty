@@ -12,6 +12,8 @@ import { ReportWebservice } from "./routes/report";
 import { GithubRepoConfigWebservice } from "./routes/config/github";
 import GhAppInstallationHandler from "./github/app-installation-handler";
 
+require("source-map-support").install();
+
 class Scotty {
   private webserver: WebServer;
   private eventBus: EventBus;
