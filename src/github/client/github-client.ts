@@ -1,5 +1,4 @@
 import * as fs from "fs";
-import * as jwt from "jsonwebtoken";
 
 import { inject } from "inversify";
 import { injectable } from "inversify";
@@ -10,8 +9,8 @@ import InstallationStorage from "./installation-storage";
 import TokenStorage from "./token-storage";
 import { log } from "@swingletree-oss/harness";
 
-import * as Github from "@octokit/rest";
-import { ChecksCreateParams } from "@octokit/rest";
+import { Octokit } from "@octokit/rest";
+const { createAppAuth } = require("@octokit/auth-app");
 
 import * as yaml from "js-yaml";
 
@@ -44,18 +43,18 @@ class GithubClientService {
     }
   }
 
-  public async getInstallations(): Promise<Github.AppsListInstallationsResponseItem[]> {
+  public async getInstallations(): Promise<Octokit.AppsListInstallationsResponseItem[]> {
     const client = this.getClient();
     const options = client.apps.listInstallations.endpoint.merge({});
     try {
-      return await client.paginate(options) as Github.AppsListInstallationsResponseItem[];
+      return await client.paginate(options) as Octokit.AppsListInstallationsResponseItem[];
     } catch (err) {
       log.error("An error occurred while fetching the installations. Please check your GitHub App private key.");
       throw err;
     }
   }
 
-  public async createCheckStatus(createParams: ChecksCreateParams): Promise<Github.Response<Github.ChecksCreateResponse>> {
+  public async createCheckStatus(createParams: Octokit.ChecksCreateParams): Promise<Octokit.Response<Octokit.ChecksCreateResponse>> {
     const client = await this.getGhAppClient(createParams.owner);
     return await client.checks.create(createParams);
   }
@@ -75,7 +74,7 @@ class GithubClientService {
     return yaml.safeLoad(Buffer.from((response.data as any).content, "base64").toString());
   }
 
-  public async getCheckSuitesOfRef(params: Github.ChecksListSuitesForRefParams): Promise<Github.Response<Github.ChecksListSuitesForRefResponse>> {
+  public async getCheckSuitesOfRef(params: Octokit.ChecksListSuitesForRefParams): Promise<Octokit.Response<Octokit.ChecksListSuitesForRefResponse>> {
     try {
       const client = await this.getGhAppClient(params.owner);
       return await client.checks.listSuitesForRef(params);
@@ -89,21 +88,14 @@ class GithubClientService {
     return await this.installationStorage.getInstallationId(login) != null;
   }
 
-  private createJWT(): string {
-    const payload = {
-      iss: this.appId
-    };
-
-    const token = jwt.sign(payload, this.key, { expiresIn: "3m", algorithm: "RS256"});
-    return token;
-  }
-
-  private getClient(): Github {
-    const context = this;
-    const ghClient = new Github({
+  private getClient(): Octokit {
+    console.log(this.key);
+    const ghClient = new Octokit({
       baseUrl: this.baseUrl,
-      auth () {
-        return `Bearer ${context.createJWT()}`;
+      authStrategy: createAppAuth,
+      auth: {
+        id: this.appId,
+        privateKey: this.key
       },
       log: this.clientLogConfig
     });
@@ -160,12 +152,12 @@ class GithubClientService {
     }
   }
 
-  private async getGhAppClient(login: string): Promise<Github> {
+  private async getGhAppClient(login: string): Promise<Octokit> {
     const bearerToken = await this.retrieveBearerToken(login);
 
     return new Promise<any>((resolve) => {
       resolve(
-        new Github({
+        new Octokit({
           baseUrl: this.baseUrl,
           auth: `token ${bearerToken}`,
           log: this.clientLogConfig

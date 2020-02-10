@@ -6,7 +6,7 @@ import { injectable, inject } from "inversify";
 import EventBus from "../event/event-bus";
 import InstallationStorage from "./client/installation-storage";
 import GithubClientService from "./client/github-client";
-import { AppsListInstallationsResponseItem } from "@octokit/rest";
+import { Octokit } from "@octokit/rest";
 import { DATABASE_INDEX } from "../db/redis-client";
 import { EventType, AppInstalledEvent, DatabaseReconnectEvent } from "../event/event-model";
 
@@ -51,10 +51,10 @@ class GhAppInstallationHandler {
       this.installationStorage.setSyncFlag();
 
       try {
-        const installations: AppsListInstallationsResponseItem[] = await this.clientService.getInstallations();
+        const installations: Octokit.AppsListInstallationsResponseItem[] = await this.clientService.getInstallations();
         log.debug("retrieved %s installations", installations.length);
 
-        installations.forEach((installation: AppsListInstallationsResponseItem) => {
+        installations.forEach((installation: Octokit.AppsListInstallationsResponseItem) => {
           this.installationStorage.store(installation.account.login, installation.id);
         });
         log.info("installation cache sync complete.");

@@ -3,7 +3,7 @@
 import { log, Harness } from "@swingletree-oss/harness";
 import GithubClientService from "./client/github-client";
 import { injectable, inject } from "inversify";
-import { ChecksCreateParams, ChecksCreateParamsOutputAnnotations } from "@octokit/rest";
+import { Octokit } from "@octokit/rest";
 
 
 /** Sends Commit Status Requests to GitHub
@@ -45,7 +45,7 @@ class GithubCommitStatusSender {
     return result;
   }
 
-  private convertToCheckAnnotations(annotations: Harness.Annotation[]): ChecksCreateParamsOutputAnnotations[] {
+  private convertToCheckAnnotations(annotations: Harness.Annotation[]): Octokit.ChecksCreateParamsOutputAnnotations[] {
     const converted = annotations.filter(i => i instanceof Harness.FileAnnotation)
       .map(annotation => {
         const item = annotation as Harness.FileAnnotation;
@@ -56,7 +56,7 @@ class GithubCommitStatusSender {
           title: item.title,
           message: item.detail,
           annotation_level: this.convertSwingletreeSeverity(item.severity)
-        } as ChecksCreateParamsOutputAnnotations;
+        } as Octokit.ChecksCreateParamsOutputAnnotations;
       });
 
     if (converted.length == 0) {
@@ -85,7 +85,7 @@ class GithubCommitStatusSender {
       return;
     }
 
-    const checkCreateParams: ChecksCreateParams = {
+    const checkCreateParams: Octokit.ChecksCreateParams = {
       head_sha: githubSource.sha,
       owner: githubSource.owner,
       repo: githubSource.repo,
