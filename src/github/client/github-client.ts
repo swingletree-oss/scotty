@@ -89,7 +89,6 @@ class GithubClientService {
   }
 
   private getClient(): Octokit {
-    console.log(this.key);
     const ghClient = new Octokit({
       baseUrl: this.baseUrl,
       authStrategy: createAppAuth,

@@ -40,7 +40,6 @@ describe("GitHub Client", () => {
     installationStorage = new InstallationStorageMock();
 
     uut = new GithubClientService(configurationMock, tokenStorage, installationStorage);
-    (uut as any).createJWT = sinon.stub().returns("JWTTOKEN");
   });
 
   afterEach(function () {
