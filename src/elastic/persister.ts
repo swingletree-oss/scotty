@@ -33,14 +33,18 @@ export class ElasticHistoryService implements HistoryService {
   }
 
   public async store(report: Harness.AnalysisReport) {
-    log.debug("creating history entry for %s %s", report.sender, report.uuid);
+    const id = this.generateId(report);
+    log.debug("creating history entry %s for %s %s", id, report.sender, report.uuid);
 
     if (!report.timestamp) {
       report.timestamp = new Date();
     }
 
+    // remove duplicate data
+    delete report.markdown;
+
     const elasticRequest: ElasticRequest<Harness.AnalysisReport> = {
-      id: this.generateId(report),
+      id: id,
       index: this.index,
       body: report
     };
