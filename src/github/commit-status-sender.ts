@@ -46,7 +46,7 @@ class GithubCommitStatusSender {
   }
 
   private convertToCheckAnnotations(annotations: Harness.Annotation[]): Octokit.ChecksCreateParamsOutputAnnotations[] {
-    const converted = annotations.filter(i => i instanceof Harness.FileAnnotation)
+    const converted = annotations.filter(i => i.type == Harness.AnnotationType.FILE)
       .map(annotation => {
         const item = annotation as Harness.FileAnnotation;
         return {
@@ -115,6 +115,8 @@ class GithubCommitStatusSender {
 
       checkCreateParams.output.annotations = this.convertToCheckAnnotations(report.annotations);
     }
+
+    log.debug("Check create parameters:\n%j", checkCreateParams);
 
     // send check run status to GitHub
     this.githubClientService
