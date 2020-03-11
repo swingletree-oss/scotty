@@ -40,7 +40,10 @@ export class ReportWebservice {
     }
 
     try {
-      this.historyService.store(report);
+      const storeReport: Harness.AnalysisReport = Object.assign({}, report);
+      delete storeReport.markdown;
+
+      this.historyService.store(storeReport);
     } catch (err) {
       log.warn("failed to persist report to history: %s", err);
     }
