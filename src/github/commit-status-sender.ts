@@ -125,8 +125,7 @@ class GithubCommitStatusSender {
         log.info("check status update (%s) for %s/%s@%s was sent to github", checkCreateParams.conclusion, githubSource.owner, githubSource.repo, githubSource.sha);
       })
       .catch((error: any) => {
-        log.error("could not persist check status for %s with commit id %s", githubSource.repo, githubSource.sha);
-        log.error(JSON.stringify(error, null, 2));
+        log.error("could not persist check status for %s with commit id %s\nerror: %j\nrequest: %j", githubSource.repo, githubSource.sha, error, checkCreateParams);
       });
 
     return checkCreateParams;
