@@ -11,6 +11,7 @@ import { AppInstalledEvent, EventType } from "../../src/event/event-model";
 import InstallationStorage from "../../src/github/client/installation-storage";
 import { InstallationStorageMock } from "../mock-classes";
 import { mockReq, mockRes } from "sinon-express-mock";
+import { GitHubInstallationReference } from "@swingletree-oss/harness/dist/comms/scotty";
 
 const sandbox = sinon.createSandbox();
 
@@ -52,7 +53,13 @@ describe("GitHub App Installation handling", () => {
 
 
   it("should send app installed event", async () => {
-    requestMock.body = ghAppInstallWebhookData;
+    const registrationData: GitHubInstallationReference = {
+      account: "abc",
+      accountId: 1,
+      installationId: 1
+    };
+
+    requestMock.body = registrationData;
 
     uut.handleInstallation(requestMock, responseMock);
 

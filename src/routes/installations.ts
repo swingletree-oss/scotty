@@ -28,8 +28,8 @@ export class InstallationWebservice {
   public getRouter(): Router {
     const router = Router();
 
-    router.post("/", this.handleInstallation);
-    router.delete("/", this.handleInstallDeletion);
+    router.post("/", this.handleInstallation.bind(this));
+    router.delete("/", this.handleInstallDeletion.bind(this));
 
 //    router.get("/installation/:org");
 //    router.get("/installation/:org/:repo");
@@ -40,31 +40,12 @@ export class InstallationWebservice {
   public handleInstallation(req: Request, res: Response) {
     log.debug("received installation request");
 
-    let installation: GitHubInstallationReference;
-    try {
-      installation = {
-        account: req.body.installation.account.login,
-        accountId: req.body.installation.account.id,
-        installationId: req.body.installation.id
-      };
-    } catch (err) {
-      log.debug("malformed installation body, %j", err);
-    }
-
-    if (!installation) {
+    const installation: GitHubInstallationReference = req.body;
+    if (!(installation.account && installation.accountId && installation.installationId)) {
+      log.debug("malformed installation body");
       res.status(400).send(
         new Comms.Message.ErrorMessage(
           new Comms.BadRequestError("malformed installation event body")
-        )
-      );
-    }
-
-
-    if (!(installation.account && installation.accountId && installation.installationId)) {
-      log.warn("could not process installation request due to missing data");
-      res.status(400).send(
-        new Comms.Message.ErrorMessage(
-          new Comms.BadRequestError("missing installation data in request.")
         )
       );
       return;
