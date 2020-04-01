@@ -8,7 +8,7 @@ import { log } from "@swingletree-oss/harness";
 class InstallationStorage {
   private client: RedisClient;
   private readonly SYNC_KEY = "//SWINGLETREE:LAST_SYNC";
-  public static readonly SYNC_INTERVAL = 86400000;
+  public static readonly SYNC_INTERVAL = 2 * 60 * 60 * 1000;
 
   constructor(
     @inject(RedisClientFactory) redisClientFactory: RedisClientFactory
