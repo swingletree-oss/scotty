@@ -78,7 +78,7 @@ export class GithubRepoConfigWebservice {
     try {
       const config = await this.github.getSwingletreeConfigFromRepository(owner, repo);
       this.cache.set(`${owner}/${repo}`, config);
-      return config;
+      return config as Harness.RawRepositoryConfig;
     } catch (err) {
       log.warn("failed to retrieve repository configuration for %s/%s: %s", owner, repo, err);
       return null;
