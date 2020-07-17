@@ -63,17 +63,24 @@ class GithubClientService extends ProviderClient {
 
   public async getSwingletreeConfigFromRepository(owner: string, repo: string) {
     const client = await this.getGhAppClient(owner);
-    const response = await client.repos.getContents({
-      owner: owner,
-      repo: repo,
-      path: ".swingletree.yml"
-    });
 
-    if (response.status == 404) {
-      return null;
+    try {
+      const response = await client.repos.getContents({
+        owner: owner,
+        repo: repo,
+        path: ".swingletree.yml"
+      });
+
+      return yaml.safeLoad(Buffer.from((response.data as any).content, "base64").toString());
+    } catch (err) {
+      if (err.status == 404) {
+        log.info("no repository configuration found.");
+        return null;
+      }
+
+      log.error("failed to retrieve repository configuration.\n%j", err);
+      throw err;
     }
-
-    return yaml.safeLoad(Buffer.from((response.data as any).content, "base64").toString());
   }
 
   public async getCheckSuitesOfRef(params: Octokit.ChecksListSuitesForRefParams): Promise<Octokit.Response<Octokit.ChecksListSuitesForRefResponse>> {
