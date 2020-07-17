@@ -1,11 +1,11 @@
 import { injectable, inject } from "inversify";
 import EventBus from "../event/event-bus";
 import { ConfigurationService } from "../configuration";
-import InstallationStorage from "../github/client/installation-storage";
+import InstallationStorage from "../provider/github/client/installation-storage";
 import { Router, Request, Response } from "express";
 import { log, Comms } from "@swingletree-oss/harness";
 import { AppInstalledEvent, AppDeinstalledEvent } from "../event/event-model";
-import { GitHubInstallationReference } from "../github/client/model";
+import { GitHubInstallationReference } from "../provider/github/client/model";
 
 @injectable()
 export class InstallationWebservice {

@@ -1,26 +1,25 @@
 import { injectable, inject } from "inversify";
-import EventBus from "../../event/event-bus";
-import { Router, Request, Response } from "express";
-import { log, Comms, Harness, Events } from "@swingletree-oss/harness";
+import { Router, Request, Response, NextFunction } from "express";
+import { log, Comms, Harness } from "@swingletree-oss/harness";
 import NodeCache = require("node-cache");
-import GithubClientService from "../../github/client/github-client";
+import { ProviderClient } from "../../provider/provider-client";
 
 @injectable()
-export class GithubRepoConfigWebservice {
+export class RepoConfigWebservice {
   private readonly TTL = 10;
 
   private cache: NodeCache;
 
-  private readonly github: GithubClientService;
+  private readonly providerClient: ProviderClient;
 
   constructor(
-    @inject(GithubClientService) github: GithubClientService
+    @inject(ProviderClient) providerClient: ProviderClient
   ) {
     this.cache = new NodeCache({
       stdTTL: this.TTL
     });
 
-    this.github = github;
+    this.providerClient = providerClient;
   }
 
   public async repoConfigHandler(req: Request, res: Response) {
@@ -76,7 +75,7 @@ export class GithubRepoConfigWebservice {
   private async store(owner: string, repo: string): Promise<Harness.RawRepositoryConfig> {
     log.debug("retrieving configuration for %s/%s", owner, repo);
     try {
-      const config = await this.github.getSwingletreeConfigFromRepository(owner, repo);
+      const config = await this.providerClient.getSwingletreeConfigFromRepository(owner, repo);
       this.cache.set(`${owner}/${repo}`, config);
       return config as Harness.RawRepositoryConfig;
     } catch (err) {
@@ -88,7 +87,16 @@ export class GithubRepoConfigWebservice {
   public getRouter(): Router {
     const router = Router();
 
-    router.get("/:owner/:repo", this.repoConfigHandler.bind(this));
+    // Deprecation warning output
+    router.get(
+      "/github/:owner/:repo",
+      (req: Request, res: Response, next: NextFunction) => {
+        log.warn("Deprecated API Endpoint called. Use config/provider/ instead.");
+        next();
+      }, this.repoConfigHandler.bind(this)
+    );
+
+    router.get("/provider/:owner/:repo", this.repoConfigHandler.bind(this));
 
     return router;
   }

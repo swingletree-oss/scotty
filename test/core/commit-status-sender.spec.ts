@@ -1,6 +1,6 @@
 "use strict";
 
-import CommitStatusSender from "../../src/github/commit-status-sender";
+import CommitStatusSender from "../../src/provider/github/commit-status-sender";
 
 import { suite, test, describe } from "mocha";
 import { expect, assert } from "chai";

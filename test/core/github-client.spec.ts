@@ -7,10 +7,10 @@ import * as sinon from "sinon";
 chai.use(require("sinon-chai"));
 
 import { ConfigurationServiceMock, EventBusMock, TokenStorageMock, InstallationStorageMock } from "../mock-classes";
-import GithubClientService from "../../src/github/client/github-client";
+import GithubClientService from "../../src/provider/github/client/github-client";
 import { ConfigurationService } from "../../src/configuration";
-import TokenStorage from "../../src/github/client/token-storage";
-import InstallationStorage from "../../src/github/client/installation-storage";
+import TokenStorage from "../../src/provider/github/client/token-storage";
+import InstallationStorage from "../../src/provider/github/client/installation-storage";
 
 const sandbox = sinon.createSandbox();
 

@@ -1,6 +1,6 @@
-import { Events, Harness } from "@swingletree-oss/harness";
+import { Events } from "@swingletree-oss/harness";
 import { DATABASE_INDEX } from "../db/redis-client";
-import { GitHubInstallationReference } from "../github/client/model";
+import { GitHubInstallationReference } from "../provider/github/client/model";
 
 /** Contains event identifiers.
  */

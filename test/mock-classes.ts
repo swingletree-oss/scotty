@@ -1,10 +1,10 @@
 import { ConfigurationService, ScottyConfig } from "../src/configuration";
 import EventBus from "../src/event/event-bus";
 import * as sinon from "sinon";
-import InstallationStorage from "../src/github/client/installation-storage";
+import InstallationStorage from "../src/provider/github/client/installation-storage";
 import RedisClientFactory from "../src/db/redis-client";
-import TokenStorage from "../src/github/client/token-storage";
-import GithubClientService from "../src/github/client/github-client";
+import TokenStorage from "../src/provider/github/client/token-storage";
+import GithubClientService from "../src/provider/github/client/github-client";
 
 export class EventBusMock extends EventBus {
   constructor() {

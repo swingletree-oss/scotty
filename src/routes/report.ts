@@ -1,17 +1,18 @@
 import { Comms, Harness, log } from "@swingletree-oss/harness";
 import { Request, Response, Router } from "express";
 import { inject, injectable } from "inversify";
-import GithubCommitStatusSender from "../github/commit-status-sender";
+import GithubCommitStatusSender from "../provider/github/commit-status-sender";
 import { HistoryService } from "../elastic/persister";
 import { BadRequestError } from "@swingletree-oss/harness/dist/comms";
+import { CommitStatusSender } from "../provider/status-sender";
 
 @injectable()
 export class ReportWebservice {
-  private readonly commitStatusSender: GithubCommitStatusSender;
+  private readonly commitStatusSender: CommitStatusSender;
   private readonly historyService: HistoryService;
 
   constructor(
-    @inject(GithubCommitStatusSender) commitStatusSender: GithubCommitStatusSender,
+    @inject(CommitStatusSender) commitStatusSender: CommitStatusSender,
     @inject(HistoryService) historyService: HistoryService
   ) {
     this.commitStatusSender = commitStatusSender;
