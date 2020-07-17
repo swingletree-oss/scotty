@@ -99,7 +99,7 @@ export class GiteaClient extends ProviderClient {
           }
 
           try {
-            log.info("parsing repository configuration for %s/%s\n%j", owner, repo, yaml.safeLoad(Buffer.from((res.body as any).content, "base64").toString()));
+            log.info("parsing repository configuration for %s/%s", owner, repo);
             resolve(yaml.safeLoad(Buffer.from((res.body as any).content, "base64").toString()));
           } catch (err) {
             reject(err);
