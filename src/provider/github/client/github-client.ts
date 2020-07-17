@@ -3,7 +3,7 @@ import * as fs from "fs";
 import { inject } from "inversify";
 import { injectable } from "inversify";
 
-import { ConfigurationService, ScottyConfig } from "../../configuration";
+import { ConfigurationService, ScottyConfig } from "../../../configuration";
 
 import InstallationStorage from "./installation-storage";
 import TokenStorage from "./token-storage";
@@ -13,9 +13,10 @@ import { Octokit } from "@octokit/rest";
 const { createAppAuth } = require("@octokit/auth-app");
 
 import * as yaml from "js-yaml";
+import { ProviderClient } from "../../provider-client";
 
 @injectable()
-class GithubClientService {
+class GithubClientService extends ProviderClient {
   private installationStorage: InstallationStorage;
   private tokenStorage: TokenStorage;
   private key: string;
@@ -29,6 +30,7 @@ class GithubClientService {
     @inject(TokenStorage) tokenStorage: TokenStorage,
     @inject(InstallationStorage) installationStorage: InstallationStorage
   ) {
+    super();
     this.key = fs.readFileSync(configurationService.get(ScottyConfig.Github.KEYFILE)).toString();
 
     this.tokenStorage = tokenStorage;

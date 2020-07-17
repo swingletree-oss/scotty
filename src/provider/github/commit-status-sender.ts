@@ -4,18 +4,21 @@ import { log, Harness } from "@swingletree-oss/harness";
 import GithubClientService from "./client/github-client";
 import { injectable, inject } from "inversify";
 import { Octokit } from "@octokit/rest";
+import { CommitStatusSender } from "../status-sender";
+import { ProviderClient } from "../provider-client";
 
 
 /** Sends Commit Status Requests to GitHub
  */
 @injectable()
-class GithubCommitStatusSender {
+class GithubCommitStatusSender extends CommitStatusSender {
 
   private githubClientService: GithubClientService;
 
   constructor(
-    @inject(GithubClientService) githubClientService: GithubClientService
+    @inject(ProviderClient) githubClientService: GithubClientService
   ) {
+    super();
     this.githubClientService = githubClientService;
   }
 

@@ -8,7 +8,7 @@ chai.use(require("sinon-chai"));
 
 import { InstallationWebservice } from "../../src/routes/installations";
 import { AppInstalledEvent, EventType } from "../../src/event/event-model";
-import InstallationStorage from "../../src/github/client/installation-storage";
+import InstallationStorage from "../../src/provider/github/client/installation-storage";
 import { InstallationStorageMock } from "../mock-classes";
 import { mockReq, mockRes } from "sinon-express-mock";
 import { GitHubInstallationReference } from "@swingletree-oss/harness/dist/comms/scotty";

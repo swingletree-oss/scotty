@@ -2,7 +2,7 @@ import { RedisClient } from "redis";
 import { inject } from "inversify";
 import { injectable } from "inversify";
 import { log } from "@swingletree-oss/harness";
-import RedisClientFactory, { DATABASE_INDEX } from "../../db/redis-client";
+import RedisClientFactory, { DATABASE_INDEX } from "../../../db/redis-client";
 
 @injectable()
 class TokenStorage {

@@ -3,12 +3,12 @@
 import { log, Events } from "@swingletree-oss/harness";
 
 import { injectable, inject } from "inversify";
-import EventBus from "../event/event-bus";
+import EventBus from "../../event/event-bus";
 import InstallationStorage from "./client/installation-storage";
 import GithubClientService from "./client/github-client";
 import { Octokit } from "@octokit/rest";
-import { DATABASE_INDEX } from "../db/redis-client";
-import { EventType, AppInstalledEvent, DatabaseReconnectEvent } from "../event/event-model";
+import { DATABASE_INDEX } from "../../db/redis-client";
+import { EventType, AppInstalledEvent, DatabaseReconnectEvent } from "../../event/event-model";
 
 
 /** Handles GitHub-App installation notices sent by GitHub

@@ -15,6 +15,13 @@ scotty:
       apiKey:
     index: swingletree
 
+  provider: gitea
+
+  # Gitea specific configuration
+  gitea:
+    base: http://localhost:8080/
+    token: 
+
   # GitHub specific configuration
   github:
     app:
@@ -24,3 +31,7 @@ scotty:
     base: https://api.github.com # Github Api base url
     secret: # this is the webhook secret. You should set it.
     debug: false # runs octokit in debug mode. Use this only for debug, since this can reveal secret tokens in the logs!
+
+
+deck:
+  baseurl: http://localhost:3000

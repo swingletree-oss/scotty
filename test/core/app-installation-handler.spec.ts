@@ -7,8 +7,7 @@ import * as sinon from "sinon";
 
 chai.use(require("sinon-chai"));
 
-import GhAppInstallationHandler from "../../src/github/app-installation-handler";
-import { GithubWebhookEventType } from "../../src/github/model/gh-webhook-event";
+import GhAppInstallationHandler from "../../src/provider/github/app-installation-handler";
 import { AppInstalledEvent, EventType } from "../../src/event/event-model";
 
 const sandbox = sinon.createSandbox();
