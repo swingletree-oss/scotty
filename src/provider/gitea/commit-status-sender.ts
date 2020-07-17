@@ -33,9 +33,9 @@ class GiteaCommitStatusSender extends CommitStatusSender {
 
     switch (conclusion) {
       case Harness.Conclusion.PASSED: result = StatusState.SUCCESS; break;
-      case Harness.Conclusion.BLOCKED: result = StatusState.ERROR; break;
+      case Harness.Conclusion.BLOCKED: result = StatusState.FAILURE; break;
       case Harness.Conclusion.UNDECISIVE: result = StatusState.WARNING; break;
-      case Harness.Conclusion.ANALYSIS_FAILURE: result = StatusState.FAILURE; break;
+      case Harness.Conclusion.ANALYSIS_FAILURE: result = StatusState.ERROR; break;
     }
 
     return result;

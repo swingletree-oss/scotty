@@ -20,7 +20,7 @@ export class GiteaClient extends ProviderClient {
       headers: {
         Authorization: `token ${config.get(ScottyConfig.Gitea.TOKEN)}`
       },
-      baseUrl: this.baseUrl,
+      baseUrl: `${this.baseUrl}/api/v1/`,
       json: true
     });
 
@@ -58,7 +58,7 @@ export class GiteaClient extends ProviderClient {
             return;
           }
 
-          log.info("commit status sent for %s/%s:%s, context: %s, status: %s", coordinates.owner, coordinates.repo, coordinates.sha, commitStatus.context, commitStatus.state);
+          log.info("commit status sent for %s/%s:%s, context: %s, conclusion: %s", coordinates.owner, coordinates.repo, coordinates.sha, commitStatus.context, commitStatus.state);
           resolve(res.body);
         }
       );
@@ -88,18 +88,19 @@ export class GiteaClient extends ProviderClient {
             return;
           }
 
-          if (res.statusCode < 200 || res.statusCode > 299) {
+          if (res.statusCode == 404) {
+            log.info("no repository configuration file found for %s/%s", owner, repo);
+            resolve(null);
+            return;
+          } else if (res.statusCode < 200 || res.statusCode > 299) {
             log.error("server responded with NOK code:\n%j", res.body);
             reject(new Error("server responded with NOK code"));
-            return;
-          } else if (res.statusCode == 404) {
-            log.debug("no repository configuration file found for %s/%s", owner, repo);
-            resolve(null);
             return;
           }
 
           try {
-            resolve(yaml.safeLoad(res.body.content).toString());
+            log.info("parsing repository configuration for %s/%s\n%j", owner, repo, yaml.safeLoad(Buffer.from((res.body as any).content, "base64").toString()));
+            resolve(yaml.safeLoad(Buffer.from((res.body as any).content, "base64").toString()));
           } catch (err) {
             reject(err);
           }
