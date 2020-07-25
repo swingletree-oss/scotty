@@ -9,6 +9,7 @@ import GithubClientService from "./client/github-client";
 import { Octokit } from "@octokit/rest";
 import { DATABASE_INDEX } from "../../db/redis-client";
 import { EventType, AppInstalledEvent, DatabaseReconnectEvent } from "../../event/event-model";
+import { ProviderClient } from "../provider-client";
 
 
 /** Handles GitHub-App installation notices sent by GitHub
@@ -22,7 +23,7 @@ class GhAppInstallationHandler {
   constructor(
     @inject(EventBus) eventBus: EventBus,
     @inject(InstallationStorage) installationStorage: InstallationStorage,
-    @inject(GithubClientService) clientService: GithubClientService
+    @inject(ProviderClient) clientService: GithubClientService
   ) {
     this.installationStorage = installationStorage;
     this.eventBus = eventBus;
