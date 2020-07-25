@@ -15,12 +15,12 @@ scotty:
       apiKey:
     index: swingletree
 
-  provider: gitea
+  provider: github # can be set to "github" or "gitea"
 
   # Gitea specific configuration
   gitea:
-    base: http://localhost:8080/
-    token: 
+    base: http://localhost:8080/ # URL to your Gitea installation
+    token: # Gitea API token
 
   # GitHub specific configuration
   github:
