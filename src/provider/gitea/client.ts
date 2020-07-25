@@ -53,8 +53,8 @@ export class GiteaClient extends ProviderClient {
           }
 
           if (res.statusCode < 200 || res.statusCode > 299) {
-            log.error("server responded with NOK code:\n%j", res.body);
-            reject(new Error("server responded with NOK code"));
+            log.error("server responded with NOK code: %j", res.statusCode);
+            reject(new Error("server responded with NOK code " + res.statusCode));
             return;
           }
 
