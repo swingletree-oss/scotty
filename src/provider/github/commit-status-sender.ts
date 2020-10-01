@@ -128,6 +128,10 @@ class GithubCommitStatusSender extends CommitStatusSender {
     if (checkCreateParams.output?.summary?.length > 65000) {
       log.warn("summary is greater than limit. Cutting excess.");
       checkCreateParams.output.summary = checkCreateParams.output.summary.substring(0, 65000);
+      if (!checkCreateParams.output.text) {
+        checkCreateParams.output.text = "";
+      }
+      checkCreateParams.output.text += "The summary was truncated due to GitHub API limits. See the Swingletree UI for a full report of all findings.";
     }
 
     try {
