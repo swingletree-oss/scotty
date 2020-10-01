@@ -6,6 +6,7 @@ import { injectable, inject } from "inversify";
 import { Octokit } from "@octokit/rest";
 import { CommitStatusSender } from "../status-sender";
 import { ProviderClient } from "../provider-client";
+import { throws } from "assert";
 
 
 /** Sends Commit Status Requests to GitHub
@@ -103,6 +104,9 @@ class GithubCommitStatusSender extends CommitStatusSender {
     if (report.checkStatus) {
       checkCreateParams.conclusion = this.convertToConclusion(report.checkStatus);
       checkCreateParams.status = "completed";
+    } else {
+      checkCreateParams.conclusion = "neutral";
+      checkCreateParams.status = "completed";
     }
 
     if (report.annotations) {
@@ -121,15 +125,36 @@ class GithubCommitStatusSender extends CommitStatusSender {
 
     log.debug("Check create parameters:\n%j", checkCreateParams);
 
-    // send check run status to GitHub
-    this.githubClientService
-      .createCheckStatus(checkCreateParams)
-      .then(() => {
-        log.info("check status update (%s) for %s/%s@%s was sent to github", checkCreateParams.conclusion, githubSource.owner, githubSource.repo, githubSource.sha);
-      })
-      .catch((error: any) => {
-        log.error("could not persist check status for %s with commit id %s\nerror: %j\nrequest: %j", githubSource.repo, githubSource.sha, error, checkCreateParams);
-      });
+    if (checkCreateParams.output?.summary?.length > 65000) {
+      log.warn("summary is greater than limit. Cutting excess.");
+      checkCreateParams.output.summary = checkCreateParams.output.summary.substring(0, 65000);
+    }
+
+    try {
+      // send check run status to GitHub
+      await this.githubClientService.createCheckStatus(checkCreateParams);
+      log.info("check status update (%s) for %s/%s@%s was sent to github", checkCreateParams.conclusion, githubSource.owner, githubSource.repo, githubSource.sha);
+
+    } catch (error) {
+      log.error("could not persist check status for %s with commit id %s\nerror: %j\nrequest: %j", githubSource.repo, githubSource.sha, error, checkCreateParams);
+      log.info("trying to notify repository of transmission failure..");
+
+      try {
+        const failureNotification: Octokit.ChecksCreateParams = {
+          head_sha: githubSource.sha,
+          owner: githubSource.owner,
+          repo: githubSource.repo,
+          name: report.sender,
+          status: "completed",
+          conclusion: "failure"
+        };
+
+        await this.githubClientService.createCheckStatus(failureNotification);
+        log.info("check status update (%s) for %s/%s@%s was sent to github", failureNotification.conclusion, githubSource.owner, githubSource.repo, githubSource.sha);
+      } catch (recoverError) {
+        log.warn("failed to notify repository of transmission failure.");
+      }
+    }
 
     return checkCreateParams;
   }

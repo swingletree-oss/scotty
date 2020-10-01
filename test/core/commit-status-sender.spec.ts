@@ -96,6 +96,14 @@ describe("Commit Status Sender", () => {
     expect(result.output.annotations).to.be.undefined;
   });
 
+  it("should set a conclusion for the report", async () => {
+    githubClientMock.createCheckStatus.resolves();
+
+    const result = await uut.sendAnalysisStatus(mockReport);
+
+    expect(result.conclusion).to.be.not.undefined;
+  });
+
 
   it("should convert swingletree severities", () => {
     const conversionMap = new Map<Harness.Severity, String>();
@@ -121,6 +129,34 @@ describe("Commit Status Sender", () => {
     conversionMap.forEach((value, key) => {
       expect((uut as any).convertToConclusion(key)).to.be.equal(value, `${key} should convert to ${value}`);
     });
+  });
+
+  it("should cut summary if it exceeds API field limits", async () => {
+    githubClientMock.createCheckStatus.resolves();
+
+    mockReport.markdown = new Array(80000 + 1).join(" ");
+
+    const result = await uut.sendAnalysisStatus(mockReport);
+
+    expect(result.output.summary.length).to.be.equal(65000);
+  });
+
+  it("should NOT cut summary if it is below the API field limit", async () => {
+    githubClientMock.createCheckStatus.resolves();
+
+    mockReport.markdown = new Array(100).join(" ");
+
+    const result = await uut.sendAnalysisStatus(mockReport);
+
+    expect(result.output.summary.length).to.be.equal(mockReport.markdown.length);
+  });
+
+  it("should try to notify the repository on transmission failures", async () => {
+    githubClientMock.createCheckStatus.rejects();
+
+    const result = await uut.sendAnalysisStatus(mockReport);
+
+    sinon.assert.calledTwice(githubClientMock.createCheckStatus);
   });
 
 });
