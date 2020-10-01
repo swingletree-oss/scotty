@@ -150,7 +150,11 @@ class GithubCommitStatusSender extends CommitStatusSender {
           repo: githubSource.repo,
           name: report.sender,
           status: "completed",
-          conclusion: "failure"
+          conclusion: "failure",
+          output: {
+            title: "Transmission failure",
+            summary: "Swingletree was not able to send the report to GitHub"
+          }
         };
 
         await this.githubClientService.createCheckStatus(failureNotification);
